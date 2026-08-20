@@ -1,0 +1,10 @@
+<resources>
+    <color name="trem_navy">#0B1220</color>
+    <color name="trem_blue">#2563EB</color>
+    <color name="trem_green">#16A34A</color>
+    <color name="trem_orange">#F59E0B</color>
+    <color name="trem_red">#DC2626</color>
+    <color name="trem_bg">#F5F7FA</color>
+    <color name="trem_card">#FFFFFF</color>
+    <color name="trem_text">#111827</color>
+</resources>
