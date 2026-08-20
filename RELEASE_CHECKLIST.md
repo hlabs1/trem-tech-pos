@@ -1,0 +1,26 @@
+# Release Checklist
+
+- [ ] Gradle sync succeeds
+- [ ] Debug APK builds
+- [ ] APK installs on Android test phone
+- [ ] App launches
+- [ ] Login works
+- [ ] Stock receiving works
+- [ ] IMEI/serial tracking works
+- [ ] Barcode/QR works
+- [ ] Sales totals reconcile
+- [ ] Payments reconcile
+- [ ] Credit/layby balances reconcile
+- [ ] Receipts/PDF sharing works
+- [ ] Refunds restore/adjust stock correctly
+- [ ] Supplier balances reconcile
+- [ ] Customer statements reconcile
+- [ ] Profit reports reconcile
+- [ ] Backup validates
+- [ ] Restore works on disposable test data
+- [ ] Location transfer quantities reconcile
+- [ ] Role permissions pass
+- [ ] Audit log records sensitive actions
+- [ ] Release keystore created securely
+- [ ] Signed release APK builds
+- [ ] Final APK installed and smoke-tested
