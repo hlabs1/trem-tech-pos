@@ -21,11 +21,14 @@ jobs:
           cache: gradle
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
         with:
-          packages: |
-            platforms;android-35
-            build-tools;35.0.0
+          packages: ''
+
+      - name: Check Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          sdkmanager --list_installed | head -100
 
       - name: Install Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -35,6 +38,11 @@ jobs:
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
 
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: trem-tech-pos-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
