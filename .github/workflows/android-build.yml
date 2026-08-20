@@ -26,7 +26,9 @@ jobs:
 
       - name: Install Android SDK packages
         run: |
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager "platform-tools"
+          sdkmanager "platforms;android-35"
+          sdkmanager "build-tools;35.0.0"
 
       - name: Install Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -47,24 +49,6 @@ jobs:
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: trem-tech-pos-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-            - name: Check Gradle projects
-        run: |
-          gradle --no-daemon projects
-          gradle --no-daemon :app:tasks --all
-
-      - name: Build debug APK
-        run: |
-          gradle --no-daemon :app:assembleDebug
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: trem-tech-pos-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
