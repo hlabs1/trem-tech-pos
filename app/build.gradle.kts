@@ -43,5 +43,5 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.4.1")
     implementation("androidx.camera:camera-view:1.4.1")
     implementation("com.itextpdf:itext7-core:8.0.5")
-    implementation("org.apache.poi:poi-ooxml:5.2.5")
+    
 }
