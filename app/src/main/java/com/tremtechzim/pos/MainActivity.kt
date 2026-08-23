@@ -25,7 +25,14 @@ class MainActivity:AppCompatActivity(){
  override fun onCreate(b:Bundle?){super.onCreate(b);db=PosDb(this);login()}
  fun e(h:String)=EditText(this).apply{hint=h}
  fun b(t:String,a:()->Unit)=Button(this).apply{text=t;setOnClickListener{a()}}
- fun root(t:String)=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setPadding(18,18,18,18);addView(TextView(this).apply{text=t;textSize=24f})}
+ fun root(t:String)=LinearLayout(this).apply{
+    orientation=LinearLayout.VERTICAL
+    setPadding(18,18,18,18)
+    addView(TextView(this@MainActivity).apply{
+        text=t
+        textSize=24f
+    })
+}
  
  
  fun aboutScreen(){val r=root("About Trem-Tech POS");r.addView(titleView("Trem-Tech POS"));r.addView(TextView(this).apply{text="Business Management & Point of Sale\\n\\nVersion 1.12\\nBuilt for Trem-Tech Zim\\n\\nModules\\n• Sales & payments\\n• Stock & IMEI/serial tracking\\n• Customers, credit & layby\\n• Suppliers & purchasing\\n• Profit & reports\\n• Barcode / QR workflow\\n• Receipts & statements\\n• Multi-location inventory\\n• Backup & restore\\n• Users, roles & audit trail";textSize=17f;setPadding(20,10,20,20)});r.addView(b("BACK"){dash()});setContentView(r)}
@@ -37,10 +44,49 @@ class MainActivity:AppCompatActivity(){
   setContentView(r)
  }
 
- 
- private fun titleView(t:String)=TextView(this).apply{text=t;textSize=24f;setTextColor(androidx.core.content.ContextCompat.getColor(this, com.tremtechzim.pos.R.color.trem_navy));setPadding(20,20,20,14);setTypeface(typeface,android.graphics.Typeface.BOLD)}
- private fun section(t:String)=TextView(this).apply{text=t;textSize=14f;setTextColor(androidx.core.content.ContextCompat.getColor(this, com.tremtechzim.pos.R.color.trem_blue));setPadding(20,18,20,8);setTypeface(typeface,android.graphics.Typeface.BOLD)}
- private fun metric(t:String)=TextView(this).apply{text=t;textSize=17f;setTextColor(androidx.core.content.ContextCompat.getColor(this, com.tremtechzim.pos.R.color.trem_text));setPadding(20,16,20,16);setBackgroundColor(androidx.core.content.ContextCompat.getColor(this, com.tremtechzim.pos.R.color.trem_card))}
+ private fun titleView(t:String)=TextView(this).apply{
+    text=t
+    textSize=24f
+    setTextColor(
+        androidx.core.content.ContextCompat.getColor(
+            this@MainActivity,
+            com.tremtechzim.pos.R.color.trem_navy
+        )
+    )
+    setPadding(20,20,20,14)
+    setTypeface(typeface,android.graphics.Typeface.BOLD)
+}
+
+private fun section(t:String)=TextView(this).apply{
+    text=t
+    textSize=14f
+    setTextColor(
+        androidx.core.content.ContextCompat.getColor(
+            this@MainActivity,
+            com.tremtechzim.pos.R.color.trem_blue
+        )
+    )
+    setPadding(20,18,20,8)
+    setTypeface(typeface,android.graphics.Typeface.BOLD)
+}
+
+private fun metric(t:String)=TextView(this).apply{
+    text=t
+    textSize=17f
+    setTextColor(
+        androidx.core.content.ContextCompat.getColor(
+            this@MainActivity,
+            com.tremtechzim.pos.R.color.trem_text
+        )
+    )
+    setPadding(20,16,20,16)
+    setBackgroundColor(
+        androidx.core.content.ContextCompat.getColor(
+            this@MainActivity,
+            com.tremtechzim.pos.R.color.trem_card
+        )
+    )
+}
 
  fun dash(){val r=root("Trem-Tech POS");val x=db.totals();r.addView(TextView(this).apply{text="Today\\nSales: $${x.sales}\\nExpenses: $${x.expenses}\\nNet: $${x.net}";textSize=18f})
   r.addView(b("🛒 NEW SALE"){checkout()});r.addView(b("🔎 STOCK SEARCH"){searchScreen()});r.addView(b("📷 SCAN BARCODE / QR"){scanner()});r.addView(b("🧾 RECEIPTS"){receipts()});r.addView(b("👥 CUSTOMERS"){customer()});r.addView(b("💳 CREDIT / LAYBY ACCOUNTS"){accounts()});r.addView(b("📊 REPORTS & DASHBOARD"){reports()});r.addView(b("📦 STOCK MOVEMENTS"){movementScreen()});r.addView(b("🏢 SUPPLIER REPORTS"){supplierReport()});if(currentUser?.role=="ADMIN")r.addView(b("🔐 USERS & PERMISSIONS"){usersScreen()});r.addView(b("🛡️ SECURITY & AUDIT"){securityScreen()});if(currentUser?.role=="ADMIN"||currentUser?.role=="MANAGER")r.addView(b("📤 EXPORT / BACKUP"){exportScreen()});r.addView(b("🏢 SUPPLIER BALANCES"){supplierBalancesScreen()});if(currentUser?.role=="ADMIN"||currentUser?.role=="MANAGER")r.addView(b("↩️ PROCESS REFUND"){refundScreen()});r.addView(b("📜 REFUND HISTORY"){refundsScreen()});r.addView(b("🔄 STOCK TRANSFERS"){transfersScreen()});r.addView(b("📍 LOCATION INVENTORY"){locationStockScreen()});r.addView(b("ℹ️ ABOUT TREM-TECH POS"){aboutScreen()});r.addView(b("🚪 LOG OUT"){currentUser=null;login()});r.addView(b("💰 EXPENSE"){expense()});setContentView(r)}
@@ -84,7 +130,37 @@ class MainActivity:AppCompatActivity(){
  fun receiptDetail(id:Long){val rs=db.receipts(50).firstOrNull{it.id==id};val r=root("Receipt #$id");if(rs!=null){r.addView(TextView(this).apply{text="Trem-Tech Zim\\nReceipt #${rs.id}\\n${rs.createdAt}\\nCustomer: ${rs.customer}\\nPayment: ${rs.payment}\\nStatus: ${rs.status}\\nTOTAL: $${"%.2f".format(rs.total)}\\n\\nThank you for your business.";textSize=18f});r.addView(b("📄 CREATE PDF RECEIPT"){val f=ReceiptPdf.create(this,rs,listOf("Sale #${rs.id}","Payment: ${rs.payment}","Customer: ${rs.customer}","Total: $${"%.2f".format(rs.total)}"));toast("PDF created: ${f.name}")});r.addView(b("📤 SHARE / SEND RECEIPT"){shareReceipt(rs)})};r.addView(b("BACK"){dash()});setContentView(r)}
  fun shareReceipt(rs:Receipt?){if(rs==null)return;val i=android.content.Intent(android.content.Intent.ACTION_SEND);i.type="text/plain";i.putExtra(android.content.Intent.EXTRA_TEXT,"Trem-Tech Zim Receipt #${rs.id}\\nTotal: $${rs.total}\\nPayment: ${rs.payment}\\nThank you for your business.");startActivity(android.content.Intent.createChooser(i,"Send receipt"))}
  fun receipts(){val r=root("Receipt History");db.receipts().forEach{rs->r.addView(b("#${rs.id} • ${rs.customer} • $${"%.2f".format(rs.total)} • ${rs.payment}"){receiptDetail(rs.id)})};r.addView(b("BACK"){dash()});setContentView(r)}
- fun customer(){val r=root("New Customer");val a=listOf(e("Name"),e("Phone"),e("WhatsApp"),e("Email"),e("Address"));a.forEach{r.addView(it)};r.addView(b("SAVE"){if(a[0].text.isBlank())toast("Name required")else{db.addCustomer(*a.map{it.text.toString()}.toTypedArray());toast("Saved");dash()}});r.addView(b("BACK"){dash()});setContentView(r)}
+ fun customer(){
+    val r=root("New Customer")
+    val a=listOf(
+        e("Name"),
+        e("Phone"),
+        e("WhatsApp"),
+        e("Email"),
+        e("Address")
+    )
+
+    a.forEach{r.addView(it)}
+
+    r.addView(b("SAVE"){
+        if(a[0].text.isBlank()){
+            toast("Name required")
+        }else{
+            db.addCustomer(
+                a[0].text.toString(),
+                a[1].text.toString(),
+                a[2].text.toString(),
+                a[3].text.toString(),
+                a[4].text.toString()
+            )
+            toast("Saved")
+            dash()
+        }
+    })
+
+    r.addView(b("BACK"){dash()})
+    setContentView(r)
+}
  fun expense(){val r=root("Expense");val d=e("Description");val a=e("Amount");r.addView(d);r.addView(a);r.addView(b("SAVE"){val v=a.text.toString().toDoubleOrNull();if(v==null||v<=0)toast("Enter valid amount")else{db.addExpense(d.text.toString(),v);toast("Saved");dash()}});r.addView(b("BACK"){dash()});setContentView(r)}
  
  
