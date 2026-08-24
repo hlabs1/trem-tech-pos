@@ -170,10 +170,74 @@ private fun metric(t:String)=TextView(this).apply{
  
  
  
- fun restoreScreen(){val r=root("Restore Database");val xs=BackupManager.list(this);if(xs.isEmpty())r.addView(TextView(this).apply{text="No verified backups available."})else xs.forEach{x->r.addView(b("RESTORE ${x.file.name}"){if(!BackupManager.validate(x.file)){toast("Backup failed validation")}else{try{val e=RestoreManager.restore(this,x.file);toast("Restored. Emergency backup: ${e.name}");login()}catch(t:Throwable){toast("Restore failed: ${t.message}")}}})});r.addView(b("BACK"){exportScreen()});setContentView(r)}
- fun locationStockScreen(){val r=root("Location Inventory");db.locationStock().forEach{x->r.addView(TextView(this).apply{text="${x.location}\\n${x.product}: ${"%.2f".format(x.quantity)} units • Cost $${"%.2f".format(x.value)}";textSize=16f})};r.addView(b("BACK"){dash()});setContentView(r)}
+ fun restoreScreen() {
+    val r = root("Restore Database")
+    val xs = BackupManager.list(this)
 
- fun backupVerifyScreen(){val r=root("Backup Verification");val xs=BackupManager.list(this);if(xs.isEmpty())r.addView(TextView(this).apply{text="No backups found."})else xs.forEach{x->r.addView(TextView(this).apply{text="${x.file.name}\\nValid: ${BackupManager.validate(x.file)}\\nSHA-256: ${x.sha256}";textSize=14f})});r.addView(b("BACK"){exportScreen()});setContentView(r)}
+    if (xs.isEmpty()) {
+        r.addView(
+            TextView(this).apply {
+                text = "No verified backups available."
+                textSize = 16f
+            }
+        )
+    } else {
+        xs.forEach { x ->
+            r.addView(
+                b("RESTORE ${x.file.name}") {
+                    if (!BackupManager.validate(x.file)) {
+                        toast("Backup failed validation")
+                    } else {
+                        try {
+                            val emergency = RestoreManager.restore(this, x.file)
+                            toast("Restored. Emergency backup: ${emergency.name}")
+                            login()
+                        } catch (t: Throwable) {
+                            toast("Restore failed: ${t.message}")
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    r.addView(b("BACK") {
+        exportScreen()
+    })
+
+    setContentView(r)
+}
+ fun locationStockScreen(){val r=root("Location Inventory");db.locationStock().forEach{x->r.addView(TextView(this).apply{text="${x.location}\\n${x.product}: ${"%.2f".format(x.quantity)} units • Cost $${"%.2f".format(x.value)}";textSize=16f})};r.addView(b("BACK"){dash()});setContentView(r)}
+fun backupVerifyScreen() {
+    val r = root("Backup Verification")
+    val xs = BackupManager.list(this)
+
+    if (xs.isEmpty()) {
+        r.addView(
+            TextView(this).apply {
+                text = "No backups found."
+                textSize = 16f
+            }
+        )
+    } else {
+        xs.forEach { x ->
+            r.addView(
+                TextView(this).apply {
+                    text = "${x.file.name}\n" +
+                           "Valid: ${BackupManager.validate(x.file)}\n" +
+                           "SHA-256: ${x.sha256}"
+                    textSize = 14f
+                }
+            )
+        }
+    }
+
+    r.addView(b("BACK") {
+        exportScreen()
+    })
+
+    setContentView(r)
+}
  fun refundScreen(){val r=root("Refund Sale");val sid=e("Sale ID");val amt=e("Refund amount");val reason=e("Reason");r.addView(sid);r.addView(amt);r.addView(reason);r.addView(b("PROCESS REFUND"){val s=sid.text.toString().toLongOrNull();val v=amt.text.toString().toDoubleOrNull();if(s==null||v==null||v<=0||reason.text.isBlank())toast("Enter sale, amount and reason")else{db.refundSale(s,v,reason.text.toString(),currentUser?.id);toast("Refund recorded");dash()}});r.addView(b("BACK"){dash()});setContentView(r)}
  fun refundsScreen(){val r=root("Refund History");db.refunds().forEach{x->r.addView(TextView(this).apply{text="#${x.id} Sale #${x.saleId} — $${"%.2f".format(x.amount)}\\n${x.reason}\\n${x.date} • ${x.user}";textSize=15f})};r.addView(b("BACK"){dash()});setContentView(r)}
 
