@@ -22,7 +22,7 @@ class MainActivity:AppCompatActivity(){
  lateinit var db:PosDb
  val cart=mutableListOf<CartItem>()
  var currentUser:UserAccount?=null
- override fun onCreate(b:Bundle?){super.onCreate(b);db=PosDb(this);login()}
+ override fun onCreate(b:Bundle?){super.onCreate(b);try{db=PosDb(this);login()}catch(t:Throwable){android.app.AlertDialog.Builder(this).setTitle("Trem-Tech POS Startup Error").setMessage(t.stackTraceToString()).setPositiveButton("OK",null).show()}}
  fun e(h:String)=EditText(this).apply{hint=h}
  fun b(t:String,a:()->Unit)=Button(this).apply{text=t;setOnClickListener{a()}}
  fun root(t:String)=LinearLayout(this).apply{
